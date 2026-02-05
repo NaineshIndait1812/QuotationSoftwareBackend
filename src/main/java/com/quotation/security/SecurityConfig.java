@@ -24,8 +24,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // allow login APIs
                 .requestMatchers(
-                    "/api/auth/**",
-                    "/api/employee/auth/**"
+                    "/**"
                 ).permitAll()
 
                 // everything else needs JWT

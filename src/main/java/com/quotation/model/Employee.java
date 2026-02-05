@@ -30,4 +30,10 @@ public class Employee {
 
     public String getEmpId() { return empId; }
     public String getPassword() { return password; }
+    public String getname() { return name; }
+    public String getemail() { return email; }
+    public String getphone() { return phone; }
+    public String getjoinDate() { return joinDate; }
+
+
 }
