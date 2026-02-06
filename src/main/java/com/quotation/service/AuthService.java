@@ -1,23 +1,3 @@
-//package com.quotation.service;
-//
-//import org.springframework.stereotype.Service;
-//
-//@Service
-//public class AuthService {
-//
-//    public boolean login(String username, String password) {
-//
-//        // TEMP: hardcoded admin login
-//        if ("admin".equals(username) && "admin123".equals(password)) {
-//            return true;
-//        }
-//
-//        return false;
-//    }
-//}
-
-
-
 package com.quotation.service;
 
 import java.util.Optional;
@@ -39,18 +19,22 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
+    // 🔐 LOGIN
     public String login(String username, String password) {
 
         Optional<Admin> adminOpt = adminRepository.findByUsername(username);
 
-        if (adminOpt.isPresent()) {
-            Admin admin = adminOpt.get();
-
-            if (admin.getPassword().equals(password)) {
-                return jwtUtil.generateToken(username);
-            }
+        if (adminOpt.isEmpty()) {
+            return null;
         }
 
-        return null;
+        Admin admin = adminOpt.get();
+
+        if (!admin.getPassword().equals(password)) {
+            return null;
+        }
+
+        // ✅ Generate JWT token
+        return jwtUtil.generateToken(admin.getUsername());
     }
 }
