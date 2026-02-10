@@ -39,23 +39,4 @@ public class EmployeeProfileController {
         emp.setPhoto(body.get("photo"));
         return employeeRepository.save(emp);
     }
-
-    @PutMapping("/update/{empId}")
-    public Employee updateEmployee(
-        @PathVariable String empId,
-        @RequestBody Employee updatedEmp) {
-
-        Employee emp = employeeRepository.findByEmpId(empId)
-            .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-    // ✅ only allowed fields
-    emp.setName(updatedEmp.getName());
-    emp.setEmail(updatedEmp.getEmail());
-    emp.setPhone(updatedEmp.getPhone());
-
-    return employeeRepository.save(emp);
-    }
-
 }
-
-
