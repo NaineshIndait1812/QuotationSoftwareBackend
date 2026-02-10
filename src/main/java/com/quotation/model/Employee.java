@@ -17,6 +17,7 @@ public class Employee {
     private String password;
     private String status;
     private String department;
+    private String photo;
 
     public Employee() {}
 
@@ -41,4 +42,12 @@ public class Employee {
     public void setPassword(String password) { this.password = password; }
     public void setStatus(String status) { this.status = status; }
     public void setDepartment(String department) { this.department = department; }
+
+	public String getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
 }
