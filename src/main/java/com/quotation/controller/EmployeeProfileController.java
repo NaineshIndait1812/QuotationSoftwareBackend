@@ -39,4 +39,23 @@ public class EmployeeProfileController {
         emp.setPhoto(body.get("photo"));
         return employeeRepository.save(emp);
     }
+
+    // ✅ UPDATE BASIC PROFILE INFO
+@PutMapping("/update/{empId}")
+public Employee updateEmployeeProfile(
+        @PathVariable String empId,
+        @RequestBody Employee updatedData) {
+
+    Employee emp = employeeRepository
+            .findByEmpId(empId)
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+    emp.setName(updatedData.getName());
+    emp.setEmail(updatedData.getEmail());
+    emp.setPhone(updatedData.getPhone());
+
+    return employeeRepository.save(emp);
 }
+
+}
+
