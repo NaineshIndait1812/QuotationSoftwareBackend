@@ -13,6 +13,7 @@ public class Client {
     private String name;
     private String email;
     private String phone;
+    private String address; 
     private String status;
     private String joinDate;
 
@@ -72,5 +73,13 @@ public class Client {
 
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 }
