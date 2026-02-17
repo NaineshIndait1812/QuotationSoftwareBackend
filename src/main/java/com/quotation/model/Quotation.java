@@ -29,6 +29,7 @@ public class Quotation {
     private String version;
     private String currency;
     private Double totalCost;
+    private String status;
 
     private List<CostItem> costBreakdown;
 
@@ -190,6 +191,14 @@ public class Quotation {
 
 	public void setClientEmail(String clientEmail) {
 		this.clientEmail = clientEmail;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
     

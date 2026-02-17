@@ -2,24 +2,26 @@ package com.quotation.controller;
 
 import com.quotation.model.Quotation;
 import com.quotation.service.QuotationService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile; // ✅ Add this
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/quotations")
-@CrossOrigin(origins = "http://localhost:5173") // React frontend URL
+@CrossOrigin(
+	    origins = "http://localhost:5173", 
+	    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS},
+	    allowedHeaders = "*"
+	)
 public class QuotationController {
 
     @Autowired
     private QuotationService service;
 
-    // ------------------- CRUD Operations -------------------
     @PostMapping
     public Quotation saveQuotation(@RequestBody Quotation quotation) {
         return service.saveQuotation(quotation);
@@ -27,40 +29,52 @@ public class QuotationController {
 
     @GetMapping
     public List<Quotation> getAllQuotations() {
-        return service.getAllQuotations();
+        return service.getQuotationsForList(); 
     }
 
     @GetMapping("/{id}")
     public Quotation getQuotationById(@PathVariable String id) {
         return service.getById(id);
     }
-
-    @DeleteMapping("/{id}")
-    public String deleteQuotation(@PathVariable String id) {
-        service.deleteQuotation(id);
-        return "Quotation deleted successfully";
+    
+ // Fetch quotations using the unique Employee ID
+    @GetMapping("/employee/id/{empId}")
+    public List<Quotation> getQuotationsByEmpId(@PathVariable String empId) {
+        return service.getQuotationsByEmployee(empId); 
     }
 
-    // ------------------- Send Email with Existing PDF -------------------
+    // 1. Fixed Status Update (PATCH)
+    @PatchMapping("/{id}")
+    public ResponseEntity<Quotation> updateQuotationStatus(
+            @PathVariable String id, 
+            @RequestBody Map<String, String> updates) {
+        
+        String newStatus = updates.get("status");
+        Quotation updated = service.updateStatus(id, newStatus);
+        return ResponseEntity.ok(updated);
+    }
+
+    // 2. Fixed Delete (Single method returning ResponseEntity)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteQuotation(@PathVariable String id) {
+        service.deleteQuotation(id);
+        return ResponseEntity.noContent().build(); 
+    }
+
     @PostMapping("/{id}/send-approval-with-pdf")
     public ResponseEntity<String> sendForApprovalWithPdf(
             @PathVariable String id,
-            @RequestParam("file") MultipartFile file) { // ✅ Now works
-
+            @RequestParam("file") MultipartFile file) {
         service.sendForApprovalWithPdf(id, file);
         return ResponseEntity.ok("Email sent successfully with PDF");
     }
 
-    // ------------------- Send Email by Generating PDF from HTML -------------------
     @PostMapping("/{id}/send-approval-html")
     public ResponseEntity<String> sendForApprovalHtml(
             @PathVariable String id,
             @RequestBody Map<String, String> body) {
-
         String htmlContent = body.get("htmlContent");
-
         service.sendForApprovalWithHtml(id, htmlContent);
-
         return ResponseEntity.ok("Email sent successfully with generated PDF");
     }
 }
