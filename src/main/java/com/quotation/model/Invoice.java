@@ -13,6 +13,7 @@ public class Invoice {
     private String dueDate;
     private String quotationId;
     private String employeeId; // To fetch by employee later
+    private String employeeName;
     
     // Client Details
     private String clientName;
@@ -109,6 +110,12 @@ public class Invoice {
 	public void setPaymentTerms(String paymentTerms) {
 		this.paymentTerms = paymentTerms;
 	}
+	public String getEmployeeName() {
+		return employeeName;
+	}
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
 
-    // Add other getters/setters for dates, tax, and project name...
+   
 }
