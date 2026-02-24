@@ -67,37 +67,55 @@ public class QuotationController {
         }
     }
     
+
+    
+ // --- Replace your old approve/reject methods with these two ---
+
     @GetMapping("/approve")
     public String approve(@RequestParam String token) {
-
         Quotation quotation = service.getByToken(token);
 
-        if (quotation == null)
-            return "Invalid Token";
+        if (quotation == null) {
+            return "<h2 style='color:red;'>Error: Invalid or Expired Token</h2>";
+        }
 
-        if (quotation.isApprovalUsed())
-            return "Already Used";
+        if (quotation.isApprovalUsed()) {
+            return "<h2 style='color:orange;'>This quotation has already been processed.</h2>";
+        }
 
+        // 1. Update DB Status
         quotation.setStatus("Approved");
         quotation.setApprovalUsed(true);
         service.saveQuotation(quotation);
 
-        return "<h2>Thank you! Quotation Approved Successfully.</h2>";
+        // 2. Notify the Team (Internal Email)
+        service.sendStatusUpdateNotification(quotation);
+
+        return "<div style='text-align:center; padding:50px; font-family:Arial;'>" +
+               "<h1 style='color:#16a34a;'>✅ Thank You!</h1>" +
+               "<p>The quotation for <b>" + quotation.getProject() + "</b> has been approved successfully.</p>" +
+               "</div>";
     }
-    
-    
+
     @GetMapping("/reject")
     public String reject(@RequestParam String token) {
-
         Quotation quotation = service.getByToken(token);
 
-        if (quotation == null)
-            return "Invalid Token";
+        if (quotation == null) {
+            return "<h2 style='color:red;'>Error: Invalid Token</h2>";
+        }
 
+        // 1. Update DB Status
         quotation.setStatus("Rejected");
         quotation.setApprovalUsed(true);
         service.saveQuotation(quotation);
 
-        return "<h2>Quotation Rejected.</h2>";
+        // 2. Notify the Team (Internal Email)
+        service.sendStatusUpdateNotification(quotation);
+
+        return "<div style='text-align:center; padding:50px; font-family:Arial;'>" +
+               "<h1 style='color:#dc2626;'>Quotation Rejected</h1>" +
+               "<p>You have rejected the quotation for <b>" + quotation.getProject() + "</b>.</p>" +
+               "</div>";
     }
 }

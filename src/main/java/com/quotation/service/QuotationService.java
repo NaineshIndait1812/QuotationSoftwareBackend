@@ -127,4 +127,36 @@ public class QuotationService {
             throw new RuntimeException("Failed to send email: " + e.getMessage());
         }
     }
+    
+ // Inside QuotationService.java
+
+    public void sendStatusUpdateNotification(Quotation quotation) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            // Set this to your company email (the one that should receive the notification)
+            helper.setTo("your-company-email@gmail.com"); 
+            helper.setSubject("ALERT: Quotation " + quotation.getStatus() + " - " + quotation.getProject());
+
+            String emailBody = 
+                "<div style='font-family:Arial;padding:20px;border:1px solid #eee;'>" +
+                "<h2 style='color:#2563eb;'>Status Update Received</h2>" +
+                "<p>The client <b>" + quotation.getClient() + "</b> has responded to a quotation.</p>" +
+                "<p><b>Quotation No:</b> " + quotation.getQuotationNumber() + "</p>" +
+                "<p><b>New Status:</b> <span style='padding:5px 10px;background:#fef3c7;font-weight:bold;'>" + 
+                quotation.getStatus() + "</span></p>" +
+                "<p><b>Project:</b> " + quotation.getProject() + "</p>" +
+                "<br/>" +
+                "<p>Check the admin panel for more details.</p>" +
+                "</div>";
+
+            helper.setText(emailBody, true);
+            mailSender.send(message);
+            
+        } catch (Exception e) {
+            System.err.println("Failed to send internal notification: " + e.getMessage());
+        }
+    }
+    
 }
