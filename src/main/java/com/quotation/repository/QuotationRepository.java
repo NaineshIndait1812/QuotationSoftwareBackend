@@ -14,4 +14,6 @@ public interface QuotationRepository extends MongoRepository<Quotation, String> 
 
     @Query(value = "{}", fields = "{ 'projectManagerSignature': 0, 'operationManagerSignature': 0, 'costBreakdown': 0, 'timeline': 0, 'terms': 0 }")
     List<Quotation> findAllExcludingHeavyFields();
+    
+    Quotation findByApprovalToken(String approvalToken);
 }

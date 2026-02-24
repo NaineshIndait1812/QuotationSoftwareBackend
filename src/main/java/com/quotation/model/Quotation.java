@@ -45,6 +45,10 @@ public class Quotation {
     private String projectManagerSignature;
     private String operationManagerSignature;
     
+    private String approvalToken;
+    private boolean approvalUsed = false;
+    private String rejectionReason;
+    
     
     public String getId() {
         return id;
@@ -199,6 +203,30 @@ public class Quotation {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	
+	public String getApprovalToken() {
+	    return approvalToken;
+	}
+
+	public void setApprovalToken(String approvalToken) {
+	    this.approvalToken = approvalToken;
+	}
+
+	public boolean isApprovalUsed() {
+	    return approvalUsed;
+	}
+
+	public void setApprovalUsed(boolean approvalUsed) {
+	    this.approvalUsed = approvalUsed;
+	}
+
+	public String getRejectionReason() {
+	    return rejectionReason;
+	}
+
+	public void setRejectionReason(String rejectionReason) {
+	    this.rejectionReason = rejectionReason;
 	}
 
     
