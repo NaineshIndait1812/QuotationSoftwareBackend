@@ -11,7 +11,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/quotations")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {
+	    "http://localhost:5173", 
+	    "https://robt-triumphant-oratorically.ngrok-free.dev"
+	})
 public class QuotationController {
 
     @Autowired
@@ -62,5 +65,39 @@ public class QuotationController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }
+    }
+    
+    @GetMapping("/approve")
+    public String approve(@RequestParam String token) {
+
+        Quotation quotation = service.getByToken(token);
+
+        if (quotation == null)
+            return "Invalid Token";
+
+        if (quotation.isApprovalUsed())
+            return "Already Used";
+
+        quotation.setStatus("Approved");
+        quotation.setApprovalUsed(true);
+        service.saveQuotation(quotation);
+
+        return "<h2>Thank you! Quotation Approved Successfully.</h2>";
+    }
+    
+    
+    @GetMapping("/reject")
+    public String reject(@RequestParam String token) {
+
+        Quotation quotation = service.getByToken(token);
+
+        if (quotation == null)
+            return "Invalid Token";
+
+        quotation.setStatus("Rejected");
+        quotation.setApprovalUsed(true);
+        service.saveQuotation(quotation);
+
+        return "<h2>Quotation Rejected.</h2>";
     }
 }

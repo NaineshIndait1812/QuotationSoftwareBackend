@@ -1,6 +1,9 @@
 package com.quotation.service;
 
 import com.quotation.model.Quotation;
+
+import java.util.UUID;
+import java.time.LocalDateTime;
 import com.quotation.repository.QuotationRepository;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -50,30 +53,76 @@ public class QuotationService {
     public List<Quotation> getQuotationsByEmployee(String empId) {
         return repository.findByPreparedBy(empId);
     }
+    
+    public Quotation getByToken(String token) {
+        return repository.findByApprovalToken(token);
+    }
 
     // THE CLEANED METHOD
     public void sendForApprovalWithPdf(String id, MultipartFile file) {
+
         Quotation quotation = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Quotation not found"));
 
         try {
+
+            // ✅ 1. Generate Token
+            String token = UUID.randomUUID().toString();
+            quotation.setApprovalToken(token);
+            quotation.setApprovalUsed(false);
+
+            repository.save(quotation);   // ✅ Save token in DB
+
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
             helper.setTo(quotation.getClientEmail());
             helper.setSubject("Approval Required: " + quotation.getProject());
-            
-            String emailBody = "Dear " + quotation.getClient() + ",\n\n" +
-                               "Please find the attached quotation for your project: " + quotation.getProject() + ".\n" +
-                               "Kindly review and provide your approval.\n\n" +
-                               "Best Regards,\nSmartMatrix Team";
-            
-            helper.setText(emailBody);
 
-            // Using the filename from the actual file picked in the browser
+            // ✅ 2. Use token in URL
+            String approveUrl = "http://localhost:8080/api/quotations/approve?token=" + token;
+            String rejectUrl  = "http://localhost:8080/api/quotations/reject?token=" + token;
+
+            String emailBody =
+                    "<div style='font-family:Arial;padding:20px;'>"
+                            + "<h2 style='color:#f97316;'>Quotation Approval Required</h2>"
+
+                            + "<p>Dear " + quotation.getClient() + ",</p>"
+
+                            + "<p><b>Quotation No:</b> " + quotation.getQuotationNumber() + "</p>"
+                            + "<p><b>Date:</b> " + quotation.getDate() + "</p>"
+                            + "<p><b>Valid Until:</b> " + quotation.getValidUntil() + "</p>"
+
+                            + "<hr/>"
+
+                            + "<p><b>Project:</b> " + quotation.getProject() + "</p>"
+                            + "<p><b>Total Cost:</b> ₹ " + quotation.getTotalCost() + "</p>"
+                            + "<p><b>Total Timeline:</b> " + quotation.getTotalTimeline() + "</p>"
+
+                            + "<hr/>"
+
+                            + "<p>Please click below:</p>"
+
+                            + "<a href='" + approveUrl + "' "
+                            + "style='background:#16a34a;color:white;padding:10px 18px;"
+                            + "text-decoration:none;border-radius:6px;margin-right:10px;'>"
+                            + "Approve</a>"
+
+                            + "<a href='" + rejectUrl + "' "
+                            + "style='background:#dc2626;color:white;padding:10px 18px;"
+                            + "text-decoration:none;border-radius:6px;'>"
+                            + "Reject</a>"
+
+                            + "<br/><br/>"
+                            + "<p>Best Regards,<br/>SmartMatrix Team</p>"
+                            + "</div>";
+
+            helper.setText(emailBody, true);
+
             helper.addAttachment(file.getOriginalFilename(), file);
 
             mailSender.send(message);
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to send email: " + e.getMessage());
         }
