@@ -2,6 +2,7 @@ package com.quotation.controller;
 
 import com.quotation.model.Quotation;
 import com.quotation.service.QuotationService;
+import com.quotation.service.NotificationService; // ADD THIS IMPORT
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -11,14 +12,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/quotations")
-@CrossOrigin(origins = {
-	    "http://localhost:5173", 
-	    "https://robt-triumphant-oratorically.ngrok-free.dev"
-	})
+@CrossOrigin(origins = "http://localhost:5173")
 public class QuotationController {
 
     @Autowired
     private QuotationService service;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @PostMapping
     public Quotation saveQuotation(@RequestBody Quotation quotation) {
@@ -61,61 +62,49 @@ public class QuotationController {
         @RequestParam("file") MultipartFile file) {
         try {
             service.sendForApprovalWithPdf(id, file); 
-            return ResponseEntity.ok("Email sent successfully with attachment!");
+            return ResponseEntity.ok("Email sent successfully!");
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
-    
-
-    
- // --- Replace your old approve/reject methods with these two ---
 
     @GetMapping("/approve")
     public String approve(@RequestParam String token) {
         Quotation quotation = service.getByToken(token);
+        if (quotation == null || quotation.isApprovalUsed()) return "<h2>Invalid or Expired</h2>";
 
-        if (quotation == null) {
-            return "<h2 style='color:red;'>Error: Invalid or Expired Token</h2>";
-        }
-
-        if (quotation.isApprovalUsed()) {
-            return "<h2 style='color:orange;'>This quotation has already been processed.</h2>";
-        }
-
-        // 1. Update DB Status
         quotation.setStatus("Approved");
         quotation.setApprovalUsed(true);
         service.saveQuotation(quotation);
 
-        // 2. Notify the Team (Internal Email)
-        service.sendStatusUpdateNotification(quotation);
+        String msg = "Client " + quotation.getClient() + " approved project: " + quotation.getProject();
+        
+        notificationService.createNotification(msg, "ADMIN", "APPROVAL");
+        if (quotation.getPreparedBy() != null) {
+            notificationService.createNotification(msg, quotation.getPreparedBy(), "APPROVAL");
+        }
 
-        return "<div style='text-align:center; padding:50px; font-family:Arial;'>" +
-               "<h1 style='color:#16a34a;'>✅ Thank You!</h1>" +
-               "<p>The quotation for <b>" + quotation.getProject() + "</b> has been approved successfully.</p>" +
-               "</div>";
+        service.sendStatusUpdateNotification(quotation);
+        return "<h1>✅ Approved Successfully</h1>";
     }
 
     @GetMapping("/reject")
     public String reject(@RequestParam String token) {
         Quotation quotation = service.getByToken(token);
+        if (quotation == null) return "<h2>Invalid Token</h2>";
 
-        if (quotation == null) {
-            return "<h2 style='color:red;'>Error: Invalid Token</h2>";
-        }
-
-        // 1. Update DB Status
         quotation.setStatus("Rejected");
         quotation.setApprovalUsed(true);
         service.saveQuotation(quotation);
 
-        // 2. Notify the Team (Internal Email)
-        service.sendStatusUpdateNotification(quotation);
+        String msg = "Client " + quotation.getClient() + " rejected project: " + quotation.getProject();
+        
+        notificationService.createNotification(msg, "ADMIN", "REJECTION");
+        if (quotation.getPreparedBy() != null) {
+            notificationService.createNotification(msg, quotation.getPreparedBy(), "REJECTION");
+        }
 
-        return "<div style='text-align:center; padding:50px; font-family:Arial;'>" +
-               "<h1 style='color:#dc2626;'>Quotation Rejected</h1>" +
-               "<p>You have rejected the quotation for <b>" + quotation.getProject() + "</b>.</p>" +
-               "</div>";
+        service.sendStatusUpdateNotification(quotation);
+        return "<h1>❌ Quotation Rejected</h1>";
     }
 }
