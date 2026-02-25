@@ -1,0 +1,10 @@
+package com.quotation.repository;
+
+import com.quotation.model.Notification;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import java.util.List;
+
+public interface NotificationRepository extends MongoRepository<Notification, String> {
+    // Fetch notifications for a specific person, latest first
+    List<Notification> findByRecipientIdOrderByTimestampDesc(String recipientId);
+}
