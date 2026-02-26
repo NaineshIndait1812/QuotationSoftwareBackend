@@ -2,6 +2,7 @@ package com.quotation.service;
 
 import com.quotation.model.Quotation;
 
+
 import java.util.UUID;
 import java.time.LocalDateTime;
 import com.quotation.repository.QuotationRepository;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class QuotationService {
@@ -23,6 +25,7 @@ public class QuotationService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Transactional
     public Quotation saveQuotation(Quotation quotation) {
         if (quotation == null) throw new RuntimeException("Quotation data is missing");
         if (quotation.getStatus() == null || quotation.getStatus().trim().isEmpty()) {

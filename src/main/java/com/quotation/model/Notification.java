@@ -15,6 +15,9 @@ public class Notification {
     private String type;        // e.g., "APPROVAL", "REJECTION", "CREATION"
     private LocalDateTime timestamp;
     private boolean isRead = false;
+    
+    public Notification() {
+    }
 
     public Notification(String message, String recipientId, String type) {
         this.setMessage(message);
