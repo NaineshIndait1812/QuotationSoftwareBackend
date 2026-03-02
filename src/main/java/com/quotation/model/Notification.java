@@ -1,6 +1,8 @@
 package com.quotation.model;
 
 import lombok.Data;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
@@ -8,7 +10,9 @@ import java.time.LocalDateTime;
 @Data
 @Document(collection = "notifications")
 public class Notification {
+	
     @Id
+    @JsonProperty("id")
     private String id;
     private String message;
     private String recipientId; // "ADMIN" or a specific Employee ID
@@ -24,6 +28,15 @@ public class Notification {
         this.setRecipientId(recipientId);
         this.setType(type);
         this.setTimestamp(LocalDateTime.now());
+    }
+    
+    
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 	public String getMessage() {

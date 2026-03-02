@@ -1,6 +1,7 @@
 package com.quotation.controller;
 
 import com.quotation.model.Notification;
+import org.springframework.http.ResponseEntity;
 import com.quotation.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +15,10 @@ public class NotificationController {
     private NotificationService service;
 
     @GetMapping("/admin")
-    public List<Notification> getAdminNotifications() {
-        return service.getNotifications("ADMIN");
+    public ResponseEntity<List<Notification>> getAdminNotifications() {
+        // FIX: Changed 'notificationService' to 'service'
+        List<Notification> adminNotes = service.getNotifications("ADMIN"); 
+        return ResponseEntity.ok(adminNotes);
     }
 
     @GetMapping("/employee/{empId}")
@@ -26,5 +29,16 @@ public class NotificationController {
     @PostMapping("/mark-read/{recipientId}")
     public void markRead(@PathVariable String recipientId) {
         service.markAllAsRead(recipientId);
+    }
+    
+    @DeleteMapping("/delete/{id}")
+    public void deleteNotification(@PathVariable String id) { // Changed Long to String
+        service.deleteNotification(id);
+    }
+
+    // DELETE ALL: /api/notifications/delete-all/EMP001
+    @DeleteMapping("/delete-all/{recipientId}")
+    public void deleteAll(@PathVariable String recipientId) {
+        service.deleteAllForRecipient(recipientId);
     }
 }
