@@ -29,6 +29,11 @@ public class Quotation {
     private String version;
     private String currency;
     private Double totalCost;
+
+	private Double gstPercent;    //GST Part
+	private Double gstAmount;       //GST Part
+	private Double finalAmount;        //GST Part
+
     private String status;
 
     private List<CostItem> costBreakdown;
@@ -48,6 +53,8 @@ public class Quotation {
     private String approvalToken;
     private boolean approvalUsed = false;
     private String rejectionReason;
+
+	
     
     
     public String getId() {
@@ -228,6 +235,30 @@ public class Quotation {
 	public void setRejectionReason(String rejectionReason) {
 	    this.rejectionReason = rejectionReason;
 	}
+
+	public Double getGstPercent() {
+    return gstPercent;
+}
+
+public void setGstPercent(Double gstPercent) {
+    this.gstPercent = gstPercent;
+}
+
+public Double getGstAmount() {
+    return gstAmount;
+}
+
+public void setGstAmount(Double gstAmount) {
+    this.gstAmount = gstAmount;
+}
+
+public Double getFinalAmount() {
+    return finalAmount;
+}
+
+public void setFinalAmount(Double finalAmount) {
+    this.finalAmount = finalAmount;
+}
 
     
 }
