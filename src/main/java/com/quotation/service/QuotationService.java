@@ -86,6 +86,12 @@ public class QuotationService {
             String approveUrl = "http://localhost:8080/api/quotations/approve?token=" + token;
             String rejectUrl  = "http://localhost:8080/api/quotations/reject?token=" + token;
 
+            double displayAmount = quotation.getTotalCost();
+
+if (quotation.getGstPercent() != null && quotation.getGstPercent() > 0) {
+    displayAmount = quotation.getFinalAmount();
+}
+
             String emailBody =
                     "<div style='font-family:Arial;padding:20px;'>"
                             + "<h2 style='color:#f97316;'>Quotation Approval Required</h2>"
@@ -99,7 +105,7 @@ public class QuotationService {
                             + "<hr/>"
 
                             + "<p><b>Project:</b> " + quotation.getProject() + "</p>"
-                            + "<p><b>Total Cost:</b> ₹ " + quotation.getTotalCost() + "</p>"
+                            + "<p><b>Total Cost:</b> ₹ " + displayAmount + "</p>"
                             + "<p><b>Total Timeline:</b> " + quotation.getTotalTimeline() + "</p>"
 
                             + "<hr/>"
