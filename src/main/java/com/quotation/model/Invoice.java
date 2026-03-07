@@ -29,6 +29,16 @@ public class Invoice {
     private String status;
     private String paymentTerms;
     
+ // Add these fields to your Invoice.java model
+    private String advancePercentage; // e.g., "40%"
+    private double advancePaid;
+    private String midwayPercentage;  // e.g., "40%"
+    private double midwayPaid;
+    private double finalPaymentPaid;
+    private double totalPaidAmount;
+    private double balanceAmount;
+    private String paymentStatus;      // "Pending", "Partially Paid", or "Paid"
+    
     // Bank Details stored as a Map or a nested Object
     private Map<String, String> bankDetails;
 
@@ -115,6 +125,54 @@ public class Invoice {
 	}
 	public void setEmployeeName(String employeeName) {
 		this.employeeName = employeeName;
+	}
+	public String getAdvancePercentage() {
+		return advancePercentage;
+	}
+	public void setAdvancePercentage(String advancePercentage) {
+		this.advancePercentage = advancePercentage;
+	}
+	public double getAdvancePaid() {
+		return advancePaid;
+	}
+	public void setAdvancePaid(double advancePaid) {
+		this.advancePaid = advancePaid;
+	}
+	public String getMidwayPercentage() {
+		return midwayPercentage;
+	}
+	public void setMidwayPercentage(String midwayPercentage) {
+		this.midwayPercentage = midwayPercentage;
+	}
+	public double getMidwayPaid() {
+		return midwayPaid;
+	}
+	public void setMidwayPaid(double midwayPaid) {
+		this.midwayPaid = midwayPaid;
+	}
+	public double getFinalPaymentPaid() {
+		return finalPaymentPaid;
+	}
+	public void setFinalPaymentPaid(double finalPaymentPaid) {
+		this.finalPaymentPaid = finalPaymentPaid;
+	}
+	public double getTotalPaidAmount() {
+		return totalPaidAmount;
+	}
+	public void setTotalPaidAmount(double totalPaidAmount) {
+		this.totalPaidAmount = totalPaidAmount;
+	}
+	public double getBalanceAmount() {
+		return balanceAmount;
+	}
+	public void setBalanceAmount(double balanceAmount) {
+		this.balanceAmount = balanceAmount;
+	}
+	public String getPaymentStatus() {
+		return paymentStatus;
+	}
+	public void setPaymentStatus(String paymentStatus) {
+		this.paymentStatus = paymentStatus;
 	}
 
    
