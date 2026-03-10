@@ -29,24 +29,14 @@ public class Invoice {
     private String status;
     private String paymentTerms;
     private String advancePercentage;
-    private String advancePaid;
-    private String midwayPercentage;
-    private String midwayPaid;
-    private String finalPaymentPaid;
-    private String totalPaidAmount;
-    private String balanceAmount;
-    private String paymentStatus;
-    private String paymentMethod;
-    
- // Add these fields to your Invoice.java model
-    private String advancePercentage; // e.g., "40%"
     private double advancePaid;
-    private String midwayPercentage;  // e.g., "40%"
+    private String midwayPercentage;
     private double midwayPaid;
     private double finalPaymentPaid;
     private double totalPaidAmount;
     private double balanceAmount;
-    private String paymentStatus;      // "Pending", "Partially Paid", or "Paid"
+    private String paymentStatus;
+    private String paymentMethod;
     
     // Bank Details stored as a Map or a nested Object
     private Map<String, String> bankDetails;
@@ -129,32 +119,9 @@ public class Invoice {
 	public void setPaymentTerms(String paymentTerms) {
 		this.paymentTerms = paymentTerms;
 	}
-	public String getAdvancePercentage() { return advancePercentage; }
-	public void setAdvancePercentage(String advancePercentage) { this.advancePercentage = advancePercentage; }
-
-	public String getAdvancePaid() { return advancePaid; }
-	public void setAdvancePaid(String advancePaid) { this.advancePaid = advancePaid; }
-
-	public String getMidwayPercentage() { return midwayPercentage; }
-	public void setMidwayPercentage(String midwayPercentage) { this.midwayPercentage = midwayPercentage; }
-
-	public String getMidwayPaid() { return midwayPaid; }
-	public void setMidwayPaid(String midwayPaid) { this.midwayPaid = midwayPaid; }
-
-	public String getFinalPaymentPaid() { return finalPaymentPaid; }
-	public void setFinalPaymentPaid(String finalPaymentPaid) { this.finalPaymentPaid = finalPaymentPaid; }
-
-	public String getTotalPaidAmount() { return totalPaidAmount; }
-	public void setTotalPaidAmount(String totalPaidAmount) { this.totalPaidAmount = totalPaidAmount; }
-
-	public String getBalanceAmount() { return balanceAmount; }
-	public void setBalanceAmount(String balanceAmount) { this.balanceAmount = balanceAmount; }
-
-	public String getPaymentStatus() { return paymentStatus; }
-	public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
-
 	public String getPaymentMethod() { return paymentMethod; }
 	public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+	
 	public String getEmployeeName() {
 		return employeeName;
 	}
