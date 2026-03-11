@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,25 +19,75 @@ public class InvoiceController {
     @Autowired
     private InvoiceRepository invoiceRepository;
 
-    // ✅ SAVE INVOICE (Called by handleSaveInvoice in React)
     @PostMapping("/create")
-    public ResponseEntity<Invoice> createInvoice(@RequestBody Invoice invoice) {
+    public ResponseEntity<?> createInvoice(@RequestBody Invoice invoice) {
+        // Ensure status is set to 'Sent' if not provided
+        if (invoice.getStatus() == null || invoice.getStatus().isEmpty()) {
+            invoice.setStatus("Sent");
+        }
+        
+        String quotationId = invoice.getQuotationId();
+        if (quotationId != null && !quotationId.isEmpty()) {
+            List<Invoice> existingInvoices = invoiceRepository.findByQuotationId(quotationId);
+            double totalAlreadyPaid = existingInvoices.stream()
+                .mapToDouble(Invoice::getTotalPaidAmount)
+                .sum();
+
+            double quotationTotal = 0;
+            try {
+                quotationTotal = Double.parseDouble(invoice.getFinalAmount().replaceAll("[^\\d.]", ""));
+            } catch (Exception e) {
+                quotationTotal = 0;
+            }
+
+            double remaining = quotationTotal - totalAlreadyPaid;
+            double newPayment = invoice.getTotalPaidAmount();
+
+            if (remaining <= 0) {
+                return ResponseEntity.badRequest().body(Map.of("message",
+                    "This quotation is already fully paid. No more invoices can be generated."));
+            }
+
+            if (newPayment > remaining + 0.01) {
+                return ResponseEntity.badRequest().body(Map.of("message",
+                    "Payment amount exceeds remaining balance (₹" + String.format("%.2f", remaining) + ") for this quotation."));
+            }
+
+            invoice.setBalanceAmount(remaining - newPayment);
+        }
+
         Invoice savedInvoice = invoiceRepository.save(invoice);
         return ResponseEntity.ok(savedInvoice);
     }
 
-    // ✅ FETCH INVOICES BY EMPLOYEE ID (Called by fetchMyInvoices in React)
     @GetMapping("/employee/id/{empId}")
     public ResponseEntity<List<Invoice>> getInvoicesByEmployee(@PathVariable String empId) {
         List<Invoice> invoices = invoiceRepository.findByEmployeeId(empId);
         return ResponseEntity.ok(invoices);
     }
-    
- // Add all invoice 
+
     @GetMapping("/all-invoices")
     public List<Invoice> getAllInvoices() {
-        System.out.println("API Hit: Fetching all invoices..."); // Check your IntelliJ/Eclipse console for this!
         return invoiceRepository.findAll();
+    }
+
+    @GetMapping("/by-quotation/{quotationId}")
+    public ResponseEntity<List<Invoice>> getInvoicesByQuotation(@PathVariable String quotationId) {
+        List<Invoice> invoices = invoiceRepository.findByQuotationId(quotationId);
+        return ResponseEntity.ok(invoices);
+    }
+
+    @PostMapping("/payment-summaries")
+    public ResponseEntity<Map<String, Double>> getPaymentSummaries(@RequestBody List<String> quotationIds) {
+        Map<String, Double> summaries = new HashMap<>();
+        for (String qId : quotationIds) {
+            List<Invoice> invoices = invoiceRepository.findByQuotationId(qId);
+            double totalPaid = invoices.stream()
+                .mapToDouble(Invoice::getTotalPaidAmount)
+                .sum();
+            summaries.put(qId, totalPaid);
+        }
+        return ResponseEntity.ok(summaries);
     }
     
  // ✅ ADD THIS: Update Invoice Status (For the Edit Button)
