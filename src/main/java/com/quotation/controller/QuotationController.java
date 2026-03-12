@@ -126,34 +126,64 @@ public class QuotationController {
         	    "Our team has been notified and will proceed with the next steps.");
     }
 
+ // STEP 1: Show the Feedback Form to the Client
     @GetMapping("/reject")
-    public String reject(@RequestParam String token) {
+    public String showRejectForm(@RequestParam String token) {
         Quotation quotation = service.getByToken(token);
-
-        // 1. STRICT LOCK CHECK
-        // Even if they click 'Reject' after 'Approve', this flag will now be TRUE
         if (quotation == null || quotation.isApprovalUsed()) {
             return renderAlreadyProcessedPage();
         }
 
-        // 2. IMMEDIATE STATE CHANGE
-        quotation.setApprovalUsed(true);
-        quotation.setStatus("Rejected");
-        
-        // 3. FORCE SAVE TO DB
-        service.saveQuotation(quotation);
-
-        String msg = "Client " + quotation.getClient() + " rejected project: " + quotation.getProject();
-        notificationService.createNotification(msg, "ADMIN", "REJECTION");
-        if (quotation.getPreparedBy() != null) {
-            notificationService.createNotification(msg, quotation.getPreparedBy(), "REJECTION");
-        }
-        service.sendStatusUpdateNotification(quotation);
-
-        return renderSmartPage("Quotation Rejected", "❌", "#be123c", 
-            "The status has been updated for <b>" + quotation.getProject() + "</b>. We will contact you to discuss further.");
+        return "<html><body style='margin:0; font-family:sans-serif; background: #fff1f2; display:flex; justify-content:center; align-items:center; height:100vh;'>" +
+               "<form action='/api/quotations/reject-submit' method='POST' style='background:white; padding:40px; border-radius:25px; box-shadow:0 10px 30px rgba(0,0,0,0.1); text-align:center; max-width:400px; border-top: 6px solid #be123c;'>" +
+               "<div style='font-size:50px; margin-bottom:15px;'>✍️</div>" +
+               "<h2 style='color:#be123c; margin:0;'>Rejection Feedback</h2>" +
+               "<p style='color:#64748b; font-size:14px; margin-top:10px;'>Please let us know why you are rejecting this quotation so we can improve our proposal.</p>" +
+               "<input type='hidden' name='token' value='" + token + "'>" +
+               "<textarea name='reason' required style='width:100%; height:120px; margin-top:20px; padding:15px; border:1px solid #e2e8f0; border-radius:12px; font-family:inherit; font-size:14px; resize:none;' placeholder='Reason for rejection (e.g., Price too high, scope mismatch...)'></textarea>" +
+               "<button type='submit' style='margin-top:25px; background:#be123c; color:white; border:none; padding:14px 30px; border-radius:10px; font-weight:bold; cursor:pointer; width:100%; font-size:16px;'>Submit Feedback</button>" +
+               "</form></body></html>";
     }
 
+ // STEP 2: Process the Submission
+    @PostMapping("/reject-submit")
+    public String handleRejectSubmit(@RequestParam String token, @RequestParam String reason) {
+        Quotation quotation = service.getByToken(token);
+        if (quotation == null || quotation.isApprovalUsed()) return renderAlreadyProcessedPage();
+
+        // 1. Update Database
+        quotation.setApprovalUsed(true);
+        quotation.setStatus("Rejected");
+        quotation.setRejectionReason(reason); 
+        service.saveQuotation(quotation);
+
+        // 2. 🔔 Bell Icon Notification
+        // Result: Client ruchita rejected projectname quotation with comment: "thank you but i dont want"
+        String bellMsg = "Client " + quotation.getClient() + 
+                         " rejected " + quotation.getProject() + 
+                         " quotation with comment: \"" + reason + "\"";
+
+        notificationService.createNotification(
+                bellMsg, 
+                "ADMIN", 
+                "REJECTION"
+        );
+        
+        if (quotation.getPreparedBy() != null) {
+            notificationService.createNotification(
+                bellMsg, 
+                quotation.getPreparedBy(), 
+                "REJECTION"
+            );
+        }
+
+        // 3. 📧 Trigger the email back to the team (already includes reason in Service)
+        service.sendStatusUpdateNotification(quotation);
+
+        return renderSmartPage("Feedback Received", "❌", "#be123c", 
+            "Thank you. Your feedback for <b>" + quotation.getProject() + "</b> has been sent to our team.");
+    }
+    
     // --- REUSABLE SMART UI RENDERERS ---
 
     private String renderSmartPage(String title, String icon, String color, String description) {
@@ -162,7 +192,7 @@ public class QuotationController {
                "<div style='font-size:60px; margin-bottom:20px;'>" + icon + "</div>" +
                "<h1 style='color:" + color + "; margin:0; font-size:26px;'>" + title + "</h1>" +
                "<p style='color:#475569; line-height:1.6; margin-top:15px; font-size:16px;'>" + description + "</p>" +
-               "<div style='margin-top:30px; font-size:11px; color:#94a3b8; letter-spacing:2px; text-transform:uppercase; font-weight:bold;'>Smart Matrix Systems</div>" +
+               "<div style='margin-top:30px; font-size:11px; color:#94a3b8; letter-spacing:2px; text-transform:uppercase; font-weight:bold;'>Smart Matrix </div>" +
                "</div></body></html>";
     }
 
@@ -171,7 +201,7 @@ public class QuotationController {
                "<div style='background:white; padding:40px; border-radius:25px; box-shadow:0 10px 30px rgba(0,0,0,0.05); text-align:center; max-width:400px;'>" +
                "<div style='font-size:50px; margin-bottom:15px;'>⚠️</div>" +
                "<h2 style='color:#64748b; margin:0;'>Action Already Taken</h2>" +
-               "<p style='color:#94a3b8; margin-top:10px; font-size:14px;'>This quotation has already been processed. No further changes can be made via this link.</p>" +
+               "<p style='color:#94a3b8; margin-top:10px; font-size:14px;'>This quotation has already been processed. No further changes can be made contact with our team.</p>" +
                "</div></body></html>";
     }
 }
