@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,7 +62,6 @@ public class QuotationService {
         return repository.findByApprovalToken(token);
     }
 
-    // THE CLEANED METHOD
     public void sendForApprovalWithPdf(String id, MultipartFile file) {
 
         Quotation quotation = repository.findById(id)
@@ -69,12 +69,12 @@ public class QuotationService {
 
         try {
 
-            // ✅ 1. Generate Token
+            // Generate approval token
             String token = UUID.randomUUID().toString();
             quotation.setApprovalToken(token);
             quotation.setApprovalUsed(false);
 
-            repository.save(quotation);   // ✅ Save token in DB
+            repository.save(quotation);
 
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -82,51 +82,112 @@ public class QuotationService {
             helper.setTo(quotation.getClientEmail());
             helper.setSubject("Approval Required: " + quotation.getProject());
 
-            // ✅ 2. Use token in URL
             String approveUrl = "http://localhost:8080/api/quotations/approve?token=" + token;
             String rejectUrl  = "http://localhost:8080/api/quotations/reject?token=" + token;
 
             double displayAmount = quotation.getTotalCost();
 
-if (quotation.getGstPercent() != null && quotation.getGstPercent() > 0) {
-    displayAmount = quotation.getFinalAmount();
-}
+            if (quotation.getGstPercent() != null && quotation.getGstPercent() > 0) {
+                displayAmount = quotation.getFinalAmount();
+            }
 
             String emailBody =
-                    "<div style='font-family:Arial;padding:20px;'>"
-                            + "<h2 style='color:#f97316;'>Quotation Approval Required</h2>"
+            "<div style='background:#f4f4f4;padding:30px;font-family:Arial,Helvetica,sans-serif;'>"
 
-                            + "<p>Dear " + quotation.getClient() + ",</p>"
+            + "<div style='max-width:650px;margin:auto;background:white;border-radius:8px;"
+            + "box-shadow:0 4px 10px rgba(0,0,0,0.08);overflow:hidden;'>"
 
-                            + "<p><b>Quotation No:</b> " + quotation.getQuotationNumber() + "</p>"
-                            + "<p><b>Date:</b> " + quotation.getDate() + "</p>"
-                            + "<p><b>Valid Until:</b> " + quotation.getValidUntil() + "</p>"
+            // Header Image
+            + "<div style='text-align:center;'>"
+            + "<img src='cid:headerImage' style='width:100%;display:block;' alt='SmartMatrix Header' />"
+            + "</div>"
 
-                            + "<hr/>"
+            // Content
+            + "<div style='padding:30px;'>"
 
-                            + "<p><b>Project:</b> " + quotation.getProject() + "</p>"
-                            + "<p><b>Total Cost:</b> ₹ " + displayAmount + "</p>"
-                            + "<p><b>Total Timeline:</b> " + quotation.getTotalTimeline() + "</p>"
+            + "<h2 style='color:#333;margin-top:0;'>Quotation Approval Required</h2>"
 
-                            + "<hr/>"
+            + "<p style='font-size:15px;color:#555;'>Dear <b>" + quotation.getClient() + "</b>,</p>"
 
-                            + "<p>Please click below:</p>"
+            + "<p style='color:#555;'>Please review the quotation details below and approve or reject it.</p>"
 
-                            + "<a href='" + approveUrl + "' "
-                            + "style='background:#16a34a;color:white;padding:10px 18px;"
-                            + "text-decoration:none;border-radius:6px;margin-right:10px;'>"
-                            + "Approve</a>"
+            // Quotation Table
+            + "<table style='width:100%;border-collapse:collapse;margin-top:20px;'>"
 
-                            + "<a href='" + rejectUrl + "' "
-                            + "style='background:#dc2626;color:white;padding:10px 18px;"
-                            + "text-decoration:none;border-radius:6px;'>"
-                            + "Reject</a>"
+            + "<tr>"
+            + "<td style='padding:8px 0;color:#666;'><b>Quotation No</b></td>"
+            + "<td style='padding:8px 0;color:#333;'>" + quotation.getQuotationNumber() + "</td>"
+            + "</tr>"
 
-                            + "<br/><br/>"
-                            + "<p>Best Regards,<br/>SmartMatrix Team</p>"
-                            + "</div>";
+            + "<tr>"
+            + "<td style='padding:8px 0;color:#666;'><b>Date</b></td>"
+            + "<td style='padding:8px 0;color:#333;'>" + quotation.getDate() + "</td>"
+            + "</tr>"
+
+            + "<tr>"
+            + "<td style='padding:8px 0;color:#666;'><b>Valid Until</b></td>"
+            + "<td style='padding:8px 0;color:#333;'>" + quotation.getValidUntil() + "</td>"
+            + "</tr>"
+
+            + "<tr>"
+            + "<td style='padding:8px 0;color:#666;'><b>Project</b></td>"
+            + "<td style='padding:8px 0;color:#333;'>" + quotation.getProject() + "</td>"
+            + "</tr>"
+
+            + "<tr>"
+            + "<td style='padding:8px 0;color:#666;'><b>Total Cost</b></td>"
+            + "<td style='padding:8px 0;color:#333;font-weight:bold;'>₹ " + displayAmount + "</td>"
+            + "</tr>"
+
+            + "<tr>"
+            + "<td style='padding:8px 0;color:#666;'><b>Total Timeline</b></td>"
+            + "<td style='padding:8px 0;color:#333;'>" + quotation.getTotalTimeline() + "</td>"
+            + "</tr>"
+
+            + "</table>"
+
+            // Buttons
+            + "<div style='margin-top:35px;text-align:center;'>"
+
+            + "<a href='" + approveUrl + "' "
+            + "style='background:#22c55e;color:white;padding:12px 28px;"
+            + "text-decoration:none;border-radius:6px;font-weight:bold;"
+            + "display:inline-block;margin-right:10px;'>Approve</a>"
+
+            + "<a href='" + rejectUrl + "' "
+            + "style='background:#ef4444;color:white;padding:12px 28px;"
+            + "text-decoration:none;border-radius:6px;font-weight:bold;"
+            + "display:inline-block;'>Reject</a>"
+
+            + "</div>"
+
+            // Closing
+            + "<p style='margin-top:30px;color:#555;font-size:14px;'>"
+            + "If you have any questions regarding this quotation, feel free to contact us."
+            + "</p>"
+
+            + "<p style='margin-top:20px;color:#555;'>"
+            + "Best Regards,<br>"
+            + "<b>SmartMatrix Digital Services</b>"
+            + "</p>"
+
+            + "</div>"
+
+            // Footer Image
+            + "<div style='text-align:center;'>"
+            + "<img src='cid:footerImage' style='width:100%;display:block;' alt='SmartMatrix Footer' />"
+            + "</div>"
+
+            + "</div>"
+            + "</div>";
 
             helper.setText(emailBody, true);
+
+            // Embed header and footer images inline
+            ClassPathResource headerRes = new ClassPathResource("images/header.jpg");
+            ClassPathResource footerRes = new ClassPathResource("images/footer.jpg");
+            helper.addInline("headerImage", headerRes, "image/jpeg");
+            helper.addInline("footerImage", footerRes, "image/jpeg");
 
             helper.addAttachment(file.getOriginalFilename(), file);
 
