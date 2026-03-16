@@ -16,6 +16,7 @@ public class Client {
     private String address; 
     private String status;
     private String joinDate;
+    private String organization;
 
     // -------- GETTERS & SETTERS --------
 
@@ -82,4 +83,12 @@ public class Client {
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
 }
