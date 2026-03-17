@@ -1,6 +1,7 @@
 package com.quotation.controller;
 
 import com.quotation.model.Quotation;
+
 import com.quotation.service.QuotationService;
 import com.quotation.service.NotificationService; // ADD THIS IMPORT
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class QuotationController {
         Quotation savedQuotation = service.saveQuotation(quotation);
 
         // 🔔 Notify ADMIN
-        String message = "New quotation " + savedQuotation.getQuotationNumber() +
+        String message = " Quotation " + savedQuotation.getQuotationNumber() +
                 " created for Client " + savedQuotation.getClient();
 
         notificationService.createNotification(
@@ -66,6 +67,12 @@ public class QuotationController {
     public ResponseEntity<Void> deleteQuotation(@PathVariable String id) {
         service.deleteQuotation(id);
         return ResponseEntity.noContent().build(); 
+    }
+    
+    @GetMapping("/trigger-reminders/{empId}")
+    public ResponseEntity<Void> triggerReminders(@PathVariable String empId) {
+        service.triggerDailyReminders(empId);
+        return ResponseEntity.ok().build();
     }
     
     @PostMapping("/{id}/send-approval-pdf")

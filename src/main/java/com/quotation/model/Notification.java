@@ -2,10 +2,12 @@ package com.quotation.model;
 
 import lombok.Data;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
+
 
 @Data
 @Document(collection = "notifications")
@@ -19,6 +21,7 @@ public class Notification {
     private String type;        // e.g., "APPROVAL", "REJECTION", "CREATION"
     private LocalDateTime timestamp;
     private boolean isRead = false;
+    private String reminderKey;
     
     public Notification() {
     }
@@ -77,5 +80,13 @@ public class Notification {
 
 	public void setRead(boolean isRead) {
 		this.isRead = isRead;
+	}
+
+	public String getReminderKey() {
+		return reminderKey;
+	}
+
+	public void setReminderKey(String reminderKey) {
+		this.reminderKey = reminderKey;
 	}
 }

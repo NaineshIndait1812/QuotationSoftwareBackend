@@ -44,4 +44,32 @@ public class NotificationService {
     public void deleteAllForRecipient(String recipientId) {
         repository.deleteByRecipientId(recipientId);
     }
+    
+ // Inside NotificationService.java
+
+ // Update this to use recipientId to match your repository
+ public boolean existsByKeyAndUser(String key, String recipientId) {
+     return repository.existsByReminderKeyAndRecipientId(key, recipientId);
+ }
+
+ public void createNotificationWithKey(String message, String recipientId, String type, String key) {
+	    // 1. CRITICAL: Stop if this key already exists for this user
+	    if (existsByKeyAndUser(key, recipientId)) {
+	        // Log this only if you want to see that the "shield" is working
+	        // System.out.println("Skipping duplicate reminder: " + key);
+	        return; 
+	    }
+
+	    Notification n = new Notification();
+	    n.setMessage(message);
+	    n.setRecipientId(recipientId);
+	    n.setType(type);
+	    n.setReminderKey(key); 
+	    n.setTimestamp(java.time.LocalDateTime.now());
+	    n.setRead(false);
+	    
+	    repository.save(n);
+	    System.out.println("DEBUG: Created NEW Reminder: " + key);
+	}
+ 
 }
