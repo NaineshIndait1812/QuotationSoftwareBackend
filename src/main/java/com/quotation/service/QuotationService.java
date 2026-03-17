@@ -71,39 +71,65 @@ public class QuotationService {
     }
     
     public void triggerDailyReminders(String empId) {
-        // CHANGE THIS: Look for "Pending" or "Sent"
-        // If your repository doesn't have findByStatusIn, use findByStatus("Pending")
-        List<Quotation> quotations = repository.findByStatus("Pending"); 
+        List<Quotation> quotations;
+
+        // --- ADDED LOGIC HERE ---
+        // If Admin is logged in, we fetch ALL quotations to check for expiration.
+        // If an Employee is logged in, we only check their specific quotations.
+        if ("ADMIN".equalsIgnoreCase(empId)) {
+            quotations = repository.findAll(); 
+        } else {
+            quotations = repository.findByPreparedBy(empId);
+        }
+        // ------------------------
         
         LocalDate today = LocalDate.now();
         DateTimeFormatter slashFormatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
         for (Quotation q : quotations) {
+            // Only process if status is Pending or already Expired
+            if (!"Pending".equalsIgnoreCase(q.getStatus()) && !"Expired".equalsIgnoreCase(q.getStatus())) {
+                continue;
+            }
+
+            // This unique key prevents duplicate notifications for the same day
             String reminderKey = "REM_DAILY_" + q.getQuotationNumber() + "_" + today;
 
-            if (notificationService.existsByKeyAndUser(reminderKey, "ADMIN")) {
-                continue; 
+            // 1. Notify the specific Employee who prepared this quotation
+            // Use q.getPreparedBy() to ensure the right employee gets it even if ADMIN triggered the check
+            if (!notificationService.existsByKeyAndUser(reminderKey, q.getPreparedBy())) {
+                processReminder(q, q.getPreparedBy(), reminderKey, today, slashFormatter);
             }
 
-            try {
-                String dateStr = q.getValidUntil();
-                if (dateStr == null || dateStr.trim().isEmpty()) continue;
+            // 2. Notify the Admin
+            if (!notificationService.existsByKeyAndUser(reminderKey, "ADMIN")) {
+                processReminder(q, "ADMIN", reminderKey, today, slashFormatter);
+            }
+        }
+    }
 
-                // This matches your "15/4/2026" format perfectly
-                LocalDate expiryDate = LocalDate.parse(dateStr.trim(), slashFormatter);
+    // Keep your processReminder helper method as it is, it works great!
+    private void processReminder(Quotation q, String recipient, String key, LocalDate today, DateTimeFormatter formatter) {
+        try {
+            String dateStr = q.getValidUntil();
+            if (dateStr == null || dateStr.trim().isEmpty()) return;
 
-                if (expiryDate.isBefore(today)) {
-                    String msg = "❌ EXPIRED: Quotation " + q.getQuotationNumber() + " has expired.";
-                    notificationService.createNotificationWithKey(msg, "ADMIN", "EXPIRED", reminderKey);
+            LocalDate expiryDate = LocalDate.parse(dateStr.trim(), formatter);
+
+            if (expiryDate.isBefore(today)) {
+                String msg = "❌ EXPIRED: Quotation " + q.getQuotationNumber() + " has expired.";
+                notificationService.createNotificationWithKey(msg, recipient, "EXPIRED", key);
+                
+                if (!"Expired".equals(q.getStatus())) {
                     q.setStatus("Expired");
                     repository.save(q);
-                } else {
-                    String msg = "⏳ REMINDER: Quotation " + q.getQuotationNumber() + " (Client: " + q.getClient() + ") is still pending.";
-                    notificationService.createNotificationWithKey(msg, "ADMIN", "DAILY_REMINDER", reminderKey);
                 }
-            } catch (Exception e) {
-                System.err.println("Date Error for " + q.getQuotationNumber() + ": " + e.getMessage());
+            } else {
+                String msg = "⏳ REMINDER: Quotation " + q.getQuotationNumber() + " (Client: " + q.getClient() + ") is still pending.";
+                notificationService.createNotificationWithKey(msg, recipient, "DAILY_REMINDER", key);
             }
+        } catch (Exception e) {
+            System.err.println("Reminder Error for " + q.getQuotationNumber() + ": " + e.getMessage());
         }
     }
     
