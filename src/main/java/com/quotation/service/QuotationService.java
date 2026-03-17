@@ -3,9 +3,11 @@ package com.quotation.service;
 import com.quotation.model.Quotation;
 
 
+
 import java.util.UUID;
 import java.time.LocalDateTime;
 import com.quotation.repository.QuotationRepository;
+import com.quotation.service.NotificationService;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,6 +19,9 @@ import org.springframework.core.io.ClassPathResource;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate; 
+import java.time.format.DateTimeFormatter; 
+
 @Service
 public class QuotationService {
 
@@ -25,6 +30,9 @@ public class QuotationService {
 
     @Autowired
     private JavaMailSender mailSender;
+    
+    @Autowired
+    private NotificationService notificationService;
 
     @Transactional
     public Quotation saveQuotation(Quotation quotation) {
@@ -61,7 +69,44 @@ public class QuotationService {
     public Quotation getByToken(String token) {
         return repository.findByApprovalToken(token);
     }
+    
+    public void triggerDailyReminders(String empId) {
+        // CHANGE THIS: Look for "Pending" or "Sent"
+        // If your repository doesn't have findByStatusIn, use findByStatus("Pending")
+        List<Quotation> quotations = repository.findByStatus("Pending"); 
+        
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter slashFormatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
+        for (Quotation q : quotations) {
+            String reminderKey = "REM_DAILY_" + q.getQuotationNumber() + "_" + today;
+
+            if (notificationService.existsByKeyAndUser(reminderKey, "ADMIN")) {
+                continue; 
+            }
+
+            try {
+                String dateStr = q.getValidUntil();
+                if (dateStr == null || dateStr.trim().isEmpty()) continue;
+
+                // This matches your "15/4/2026" format perfectly
+                LocalDate expiryDate = LocalDate.parse(dateStr.trim(), slashFormatter);
+
+                if (expiryDate.isBefore(today)) {
+                    String msg = "❌ EXPIRED: Quotation " + q.getQuotationNumber() + " has expired.";
+                    notificationService.createNotificationWithKey(msg, "ADMIN", "EXPIRED", reminderKey);
+                    q.setStatus("Expired");
+                    repository.save(q);
+                } else {
+                    String msg = "⏳ REMINDER: Quotation " + q.getQuotationNumber() + " (Client: " + q.getClient() + ") is still pending.";
+                    notificationService.createNotificationWithKey(msg, "ADMIN", "DAILY_REMINDER", reminderKey);
+                }
+            } catch (Exception e) {
+                System.err.println("Date Error for " + q.getQuotationNumber() + ": " + e.getMessage());
+            }
+        }
+    }
+    
     public void sendForApprovalWithPdf(String id, MultipartFile file) {
 
         Quotation quotation = repository.findById(id)

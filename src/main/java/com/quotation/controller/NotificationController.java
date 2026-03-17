@@ -32,8 +32,9 @@ public class NotificationController {
     }
     
     @DeleteMapping("/delete/{id}")
-    public void deleteNotification(@PathVariable String id) { // Changed Long to String
+    public ResponseEntity<?> deleteNotification(@PathVariable String id) {
         service.deleteNotification(id);
+        return ResponseEntity.ok().build(); // Return 200 OK so the frontend knows it worked
     }
 
     // DELETE ALL: /api/notifications/delete-all/EMP001
