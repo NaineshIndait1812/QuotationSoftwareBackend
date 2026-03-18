@@ -44,6 +44,8 @@ public class Quotation {
 
     private Map<String, String> terms;
 
+    private List<Map<String, Object>> paymentTerms;
+
     private String projectManager;
     private String operationManager;
 
@@ -163,6 +165,14 @@ public class Quotation {
 	public void setTerms(Map<String, String> terms) {
 		this.terms = terms;
 	}
+
+	public List<Map<String, Object>> getPaymentTerms() {
+		return paymentTerms;
+	}
+	public void setPaymentTerms(List<Map<String, Object>> paymentTerms) {
+		this.paymentTerms = paymentTerms;
+	}
+
 	public String getProjectManager() {
 		return projectManager;
 	}
