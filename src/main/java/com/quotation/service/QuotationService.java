@@ -82,8 +82,6 @@ public class QuotationService {
             quotations = repository.findByPreparedBy(empId);
         }
         
-        // Debug line to see how many quotations are being processed in your console
-        System.out.println("Processing reminders for: " + empId + ". Total found: " + quotations.size());
         
         LocalDate today = LocalDate.now();
         DateTimeFormatter slashFormatter = DateTimeFormatter.ofPattern("d/M/yyyy");
