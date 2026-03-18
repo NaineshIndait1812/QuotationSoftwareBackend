@@ -76,12 +76,14 @@ public class QuotationService {
         // --- ADDED LOGIC HERE ---
         // If Admin is logged in, we fetch ALL quotations to check for expiration.
         // If an Employee is logged in, we only check their specific quotations.
-        if ("ADMIN".equalsIgnoreCase(empId)) {
+        if ("ADMIN".equalsIgnoreCase(empId.trim())) {
             quotations = repository.findAll(); 
         } else {
             quotations = repository.findByPreparedBy(empId);
         }
-        // ------------------------
+        
+        // Debug line to see how many quotations are being processed in your console
+        System.out.println("Processing reminders for: " + empId + ". Total found: " + quotations.size());
         
         LocalDate today = LocalDate.now();
         DateTimeFormatter slashFormatter = DateTimeFormatter.ofPattern("d/M/yyyy");
