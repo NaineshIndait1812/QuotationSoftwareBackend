@@ -34,15 +34,30 @@ public class QuotationService {
     @Autowired
     private NotificationService notificationService;
 
+ // Inside QuotationService.java
+
     @Transactional
     public Quotation saveQuotation(Quotation quotation) {
         if (quotation == null) throw new RuntimeException("Quotation data is missing");
+        
+        // Fix: If it's a brand new quotation with no status, set to Draft
         if (quotation.getStatus() == null || quotation.getStatus().trim().isEmpty()) {
             quotation.setStatus("Draft");
         }
+
+        // Always update actionDate whenever we save/update
+        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        quotation.setActionDate(now);
+
         return repository.save(quotation);
     }
 
+    // Add this helper to ensure consistency when status changes
+    public void updateStatusAndSave(Quotation quotation, String newStatus) {
+        quotation.setStatus(newStatus);
+        
+        this.saveQuotation(quotation);
+    }
     public List<Quotation> getQuotationsForList() {
         return repository.findAllExcludingHeavyFields();
     }
@@ -59,7 +74,7 @@ public class QuotationService {
         Quotation quotation = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Quotation not found"));
         quotation.setStatus(newStatus);
-        return repository.save(quotation);
+        return this.saveQuotation(quotation);
     }
     
     public List<Quotation> getQuotationsByEmployee(String empId) {
@@ -139,13 +154,16 @@ public class QuotationService {
                 .orElseThrow(() -> new RuntimeException("Quotation not found"));
 
         try {
+        	quotation.setStatus("Pending");
+            // This ensures the actionDate is updated to NOW and saved to MongoDB
+            this.saveQuotation(quotation);
 
             // Generate approval token
             String token = UUID.randomUUID().toString();
             quotation.setApprovalToken(token);
             quotation.setApprovalUsed(false);
 
-            repository.save(quotation);
+            this.saveQuotation(quotation);
 
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
