@@ -45,12 +45,6 @@ public class Quotation {
     private Map<String, String> terms;
 
     private List<Map<String, Object>> paymentTerms;
-
-    private String projectManager;
-    private String operationManager;
-
-    private String projectManagerSignature;
-    private String operationManagerSignature;
     
     private String approvalToken;
     private boolean approvalUsed = false;
@@ -171,31 +165,6 @@ public class Quotation {
 	}
 	public void setPaymentTerms(List<Map<String, Object>> paymentTerms) {
 		this.paymentTerms = paymentTerms;
-	}
-
-	public String getProjectManager() {
-		return projectManager;
-	}
-	public void setProjectManager(String projectManager) {
-		this.projectManager = projectManager;
-	}
-	public String getOperationManager() {
-		return operationManager;
-	}
-	public void setOperationManager(String operationManager) {
-		this.operationManager = operationManager;
-	}
-	public String getProjectManagerSignature() {
-		return projectManagerSignature;
-	}
-	public void setProjectManagerSignature(String projectManagerSignature) {
-		this.projectManagerSignature = projectManagerSignature;
-	}
-	public String getOperationManagerSignature() {
-		return operationManagerSignature;
-	}
-	public void setOperationManagerSignature(String operationManagerSignature) {
-		this.operationManagerSignature = operationManagerSignature;
 	}
 
 	public List<CostItem> getCostBreakdown() {
