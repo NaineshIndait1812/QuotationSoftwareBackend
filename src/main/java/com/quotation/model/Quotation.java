@@ -29,6 +29,7 @@ public class Quotation {
     private String version;
     private String currency;
     private Double totalCost;
+    private String actionDate;
 
 	private Double gstPercent;    //GST Part
 	private Double gstAmount;       //GST Part
@@ -268,6 +269,14 @@ public Double getFinalAmount() {
 
 public void setFinalAmount(Double finalAmount) {
     this.finalAmount = finalAmount;
+}
+
+public String getActionDate() {
+	return actionDate;
+}
+
+public void setActionDate(String actionDate) {
+	this.actionDate = actionDate;
 }
 
     

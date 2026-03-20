@@ -58,8 +58,19 @@ public class QuotationController {
     public ResponseEntity<Quotation> updateQuotationStatus(
             @PathVariable String id, 
             @RequestBody Map<String, String> updates) {
+        
+        Quotation quotation = service.getById(id);
+        if (quotation == null) {
+            throw new RuntimeException("Quotation not found");
+        }
+
         String newStatus = updates.get("status");
-        Quotation updated = service.updateStatus(id, newStatus);
+        quotation.setStatus(newStatus);
+
+        // FIX: Call service.saveQuotation instead of repository.save
+        // This ensures the actionDate is updated automatically!
+        Quotation updated = service.saveQuotation(quotation); 
+        
         return ResponseEntity.ok(updated);
     }
 
@@ -114,11 +125,9 @@ public class QuotationController {
 
         // 2. IMMEDIATE STATE CHANGE
         quotation.setApprovalUsed(true); 
-        quotation.setStatus("Approved");
+        service.updateStatusAndSave(quotation, "Approved");
         
-        // 3. FORCE SAVE TO DB
-        // Ensure your service.saveQuotation uses repository.save() internally
-        service.saveQuotation(quotation);
+        
 
         // 4. NOTIFICATIONS (Happens after DB is locked)
         String msg = "Client " + quotation.getClient() + " approved project: " + quotation.getProject();
@@ -160,9 +169,10 @@ public class QuotationController {
 
         // 1. Update Database
         quotation.setApprovalUsed(true);
-        quotation.setStatus("Rejected");
         quotation.setRejectionReason(reason); 
-        service.saveQuotation(quotation);
+        
+        // 2. Save everything once through the service to trigger the date update
+        service.updateStatusAndSave(quotation, "Rejected");
 
         // 2. 🔔 Bell Icon Notification
         // Result: Client ruchita rejected projectname quotation with comment: "thank you but i dont want"
