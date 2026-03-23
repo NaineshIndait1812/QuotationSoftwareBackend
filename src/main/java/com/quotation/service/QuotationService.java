@@ -137,7 +137,7 @@ public class QuotationService {
                 
                 if (!"Expired".equals(q.getStatus())) {
                     q.setStatus("Expired");
-                    repository.save(q);
+                    this.saveQuotation(q);
                 }
             } else {
                 String msg = "⏳ REMINDER: Quotation " + q.getQuotationNumber() + " (Client: " + q.getClient() + ") is still pending.";
