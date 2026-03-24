@@ -50,6 +50,8 @@ public class Quotation {
     private String approvalToken;
     private boolean approvalUsed = false;
     private String rejectionReason;
+    
+    private Double adjustmentAmount = 0.0; // ✅ Carry-forward amount from previous invoice
 
 	
     
@@ -246,6 +248,14 @@ public String getActionDate() {
 
 public void setActionDate(String actionDate) {
 	this.actionDate = actionDate;
+}
+
+public Double getAdjustmentAmount() {
+	return adjustmentAmount != null ? adjustmentAmount : 0.0;
+}
+
+public void setAdjustmentAmount(Double adjustmentAmount) {
+	this.adjustmentAmount = adjustmentAmount != null ? adjustmentAmount : 0.0;
 }
 
     

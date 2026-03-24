@@ -38,7 +38,10 @@ public class Invoice {
     private String paymentStatus;
     private String paymentMethod;
     
-    // Bank Details stored as a Map or a nested Object
+    // ✅ Custom Percentage & Carry-Forward Support
+    private double carryForwardPercentage;
+    private double adjustmentAmount; // ✅ Carry-forward amount from previous invoice
+    private String customComment;
     private Map<String, String> bankDetails;
 
     // --- GETTERS AND SETTERS ---
@@ -175,6 +178,28 @@ public class Invoice {
 	}
 	public void setPaymentStatus(String paymentStatus) {
 		this.paymentStatus = paymentStatus;
+	}
+	
+	// ✅ Getters and Setters for Carry-Forward
+	public double getCarryForwardPercentage() {
+		return carryForwardPercentage;
+	}
+	public void setCarryForwardPercentage(double carryForwardPercentage) {
+		this.carryForwardPercentage = carryForwardPercentage;
+	}
+	
+	public double getAdjustmentAmount() {
+		return adjustmentAmount;
+	}
+	public void setAdjustmentAmount(double adjustmentAmount) {
+		this.adjustmentAmount = adjustmentAmount;
+	}
+	
+	public String getCustomComment() {
+		return customComment;
+	}
+	public void setCustomComment(String customComment) {
+		this.customComment = customComment;
 	}
 
    
