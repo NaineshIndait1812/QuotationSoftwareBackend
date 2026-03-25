@@ -59,7 +59,7 @@ public class QuotationService {
         this.saveQuotation(quotation);
     }
     public List<Quotation> getQuotationsForList() {
-        return repository.findAllExcludingHeavyFields();
+        return repository.findAll();
     }
 
     public Quotation getById(String id) {

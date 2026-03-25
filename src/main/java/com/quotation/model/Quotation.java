@@ -37,6 +37,11 @@ public class Quotation {
 
     private String status;
 
+	private String aboutProject;
+private String scopeOfWork;
+
+private List<Map<String, String>> techStack;
+
     private List<CostItem> costBreakdown;
 
     private List<String> includes;
@@ -46,6 +51,24 @@ public class Quotation {
     private Map<String, String> terms;
 
     private List<Map<String, Object>> paymentTerms;
+
+	private List<Map<String, Object>> maintenancePlans;
+
+	// 🔥 SIGNATURE & AUTHORITY FIELDS
+
+private String signature;
+private String signatureUpload;
+private String companyStamp;
+
+private String authorizedName;
+private String authorizedRole;
+private String companyName;
+
+private String contactNumber;
+private String contactEmail;
+private String location;
+
+private String signatureNote;
     
     private String approvalToken;
     private boolean approvalUsed = false;
@@ -248,5 +271,116 @@ public void setActionDate(String actionDate) {
 	this.actionDate = actionDate;
 }
 
+public String getAboutProject() {
+    return aboutProject;
+}
+
+public void setAboutProject(String aboutProject) {
+    this.aboutProject = aboutProject;
+}
+
+public String getScopeOfWork() {
+    return scopeOfWork;
+}
+
+public void setScopeOfWork(String scopeOfWork) {
+    this.scopeOfWork = scopeOfWork;
+}
+
+public List<Map<String, String>> getTechStack() {
+    return techStack;
+}
+
+public void setTechStack(List<Map<String, String>> techStack) {
+    this.techStack = techStack;
+}
+
+public List<Map<String, Object>> getMaintenancePlans() {
+    return maintenancePlans;
+}
+
+public void setMaintenancePlans(List<Map<String, Object>> maintenancePlans) {
+    this.maintenancePlans = maintenancePlans;
+}
+
+public String getSignature() {
+    return signature;
+}
+
+public void setSignature(String signature) {
+    this.signature = signature;
+}
+
+public String getCompanyStamp() {
+    return companyStamp;
+}
+
+public void setCompanyStamp(String companyStamp) {
+    this.companyStamp = companyStamp;
+}
+
+public String getAuthorizedName() {
+    return authorizedName;
+}
+
+public void setAuthorizedName(String authorizedName) {
+    this.authorizedName = authorizedName;
+}
+
+public String getAuthorizedRole() {
+    return authorizedRole;
+}
+
+public void setAuthorizedRole(String authorizedRole) {
+    this.authorizedRole = authorizedRole;
+}
+
+public String getCompanyName() {
+    return companyName;
+}
+
+public void setCompanyName(String companyName) {
+    this.companyName = companyName;
+}
+
+public String getContactNumber() {
+    return contactNumber;
+}
+
+public void setContactNumber(String contactNumber) {
+    this.contactNumber = contactNumber;
+}
+
+public String getContactEmail() {
+    return contactEmail;
+}
+
+public void setContactEmail(String contactEmail) {
+    this.contactEmail = contactEmail;
+}
+
+public String getLocation() {
+    return location;
+}
+
+public void setLocation(String location) {
+    this.location = location;
+}
+
+public String getSignatureNote() {
+    return signatureNote;
+}
+
+public void setSignatureNote(String signatureNote) {
+    this.signatureNote = signatureNote;
+}
+
+public String getSignatureUpload() {
+	return signatureUpload;
+}
+
+public void setSignatureUpload(String signatureUpload) {
+	this.signatureUpload = signatureUpload;
+}
     
 }
