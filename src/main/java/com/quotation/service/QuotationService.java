@@ -4,6 +4,7 @@ import com.quotation.model.Quotation;
 
 
 
+
 import java.util.UUID;
 import java.time.LocalDateTime;
 import com.quotation.repository.QuotationRepository;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate; 
@@ -48,6 +51,26 @@ public class QuotationService {
         // Always update actionDate whenever we save/update
         String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         quotation.setActionDate(now);
+        
+        // ✅ ADD THIS BLOCK HERE
+        if (quotation.getTimeline() != null && !quotation.getTimeline().isEmpty()) {
+            int totalWeeks = 0;
+
+            for (Map<String, String> phase : quotation.getTimeline()) {
+                String duration = phase.get("duration"); // e.g. "2 Weeks"
+
+                if (duration != null) {
+                    String number = duration.replaceAll("[^0-9]", "");
+
+                    if (!number.isEmpty()) {
+                        totalWeeks += Integer.parseInt(number);
+                    }
+                }
+            }
+
+            quotation.setTotalTimeline(totalWeeks + " Weeks");
+        }
+
 
         return repository.save(quotation);
     }
