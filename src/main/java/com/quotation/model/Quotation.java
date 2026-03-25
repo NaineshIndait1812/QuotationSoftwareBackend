@@ -73,6 +73,8 @@ private String signatureNote;
     private String approvalToken;
     private boolean approvalUsed = false;
     private String rejectionReason;
+    
+    private Double adjustmentAmount = 0.0; // ✅ Carry-forward amount from previous invoice
 
 	
     
@@ -382,5 +384,13 @@ public String getSignatureUpload() {
 public void setSignatureUpload(String signatureUpload) {
 	this.signatureUpload = signatureUpload;
 }
+public Double getAdjustmentAmount() {
+	return adjustmentAmount != null ? adjustmentAmount : 0.0;
+}
+
+public void setAdjustmentAmount(Double adjustmentAmount) {
+	this.adjustmentAmount = adjustmentAmount != null ? adjustmentAmount : 0.0;
+}
+
     
 }
