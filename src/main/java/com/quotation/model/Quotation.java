@@ -21,7 +21,9 @@ public class Quotation {
     private String clientAddress;
     
     private String clientPhone;
-    private String clientEmail;
+	private String clientOrganization;
+
+	private String clientEmail;
 
 
     private String preparedBy;
@@ -31,16 +33,15 @@ public class Quotation {
     private Double totalCost;
     private String actionDate;
 
-	private Double gstPercent;    //GST Part
-	private Double gstAmount;       //GST Part
-	private Double finalAmount;        //GST Part
+	private Double gstPercent;
+	private Double gstAmount;   
+	private Double finalAmount;        
 
     private String status;
 
 	private String aboutProject;
-private String scopeOfWork;
-
-private List<Map<String, String>> techStack;
+	private String scopeOfWork;
+	private List<Map<String, String>> techStack;
 
     private List<CostItem> costBreakdown;
 
@@ -54,21 +55,23 @@ private List<Map<String, String>> techStack;
 
 	private List<Map<String, Object>> maintenancePlans;
 
+	private Map<String, List<String>> assumptions;
+
 	// 🔥 SIGNATURE & AUTHORITY FIELDS
 
-private String signature;
-private String signatureUpload;
-private String companyStamp;
+	private String signature;
+	private String signatureUpload;
+	private String companyStamp;
 
-private String authorizedName;
-private String authorizedRole;
-private String companyName;
+	private String authorizedName;
+	private String authorizedRole;
+	private String companyName;
 
-private String contactNumber;
-private String contactEmail;
-private String location;
+	private String contactNumber;
+	private String contactEmail;
+	private String location;
 
-private String signatureNote;
+	private String signatureNote;
     
     private String approvalToken;
     private boolean approvalUsed = false;
@@ -76,9 +79,6 @@ private String signatureNote;
     
     private Double adjustmentAmount = 0.0; // ✅ Carry-forward amount from previous invoice
 
-	
-    
-    
     public String getId() {
         return id;
     }
@@ -130,6 +130,7 @@ private String signatureNote;
 	public void setClientPhone(String clientPhone) {
 		this.clientPhone = clientPhone;
 	}
+	
 	public String getPreparedBy() {
 		return preparedBy;
 	}
@@ -245,152 +246,167 @@ private String signatureNote;
     return gstPercent;
 }
 
-public void setGstPercent(Double gstPercent) {
-    this.gstPercent = gstPercent;
-}
+	public void setGstPercent(Double gstPercent) {
+		this.gstPercent = gstPercent;
+	}
 
-public Double getGstAmount() {
-    return gstAmount;
-}
+	public Double getGstAmount() {
+		return gstAmount;
+	}
 
-public void setGstAmount(Double gstAmount) {
-    this.gstAmount = gstAmount;
-}
+	public void setGstAmount(Double gstAmount) {
+		this.gstAmount = gstAmount;
+	}
 
-public Double getFinalAmount() {
-    return finalAmount;
-}
+	public Double getFinalAmount() {
+		return finalAmount;
+	}
 
-public void setFinalAmount(Double finalAmount) {
-    this.finalAmount = finalAmount;
-}
+	public void setFinalAmount(Double finalAmount) {
+		this.finalAmount = finalAmount;
+	}
 
-public String getActionDate() {
-	return actionDate;
-}
+	public String getActionDate() {
+		return actionDate;
+	}
 
-public void setActionDate(String actionDate) {
-	this.actionDate = actionDate;
-}
+	public void setActionDate(String actionDate) {
+		this.actionDate = actionDate;
+	}
 
-public String getAboutProject() {
-    return aboutProject;
-}
+	public String getAboutProject() {
+		return aboutProject;
+	}
 
-public void setAboutProject(String aboutProject) {
-    this.aboutProject = aboutProject;
-}
+	public void setAboutProject(String aboutProject) {
+		this.aboutProject = aboutProject;
+	}
 
-public String getScopeOfWork() {
-    return scopeOfWork;
-}
+	public String getScopeOfWork() {
+		return scopeOfWork;
+	}
 
-public void setScopeOfWork(String scopeOfWork) {
-    this.scopeOfWork = scopeOfWork;
-}
+	public void setScopeOfWork(String scopeOfWork) {
+		this.scopeOfWork = scopeOfWork;
+	}
 
-public List<Map<String, String>> getTechStack() {
-    return techStack;
-}
+	public List<Map<String, String>> getTechStack() {
+		return techStack;
+	}
 
-public void setTechStack(List<Map<String, String>> techStack) {
-    this.techStack = techStack;
-}
+	public void setTechStack(List<Map<String, String>> techStack) {
+		this.techStack = techStack;
+	}
 
-public List<Map<String, Object>> getMaintenancePlans() {
-    return maintenancePlans;
-}
+	public List<Map<String, Object>> getMaintenancePlans() {
+		return maintenancePlans;
+	}
 
-public void setMaintenancePlans(List<Map<String, Object>> maintenancePlans) {
-    this.maintenancePlans = maintenancePlans;
-}
+	public void setMaintenancePlans(List<Map<String, Object>> maintenancePlans) {
+		this.maintenancePlans = maintenancePlans;
+	}
 
-public String getSignature() {
-    return signature;
-}
+	public String getSignature() {
+		return signature;
+	}
 
-public void setSignature(String signature) {
-    this.signature = signature;
-}
+	public void setSignature(String signature) {
+		this.signature = signature;
+	}
 
-public String getCompanyStamp() {
-    return companyStamp;
-}
+	public String getCompanyStamp() {
+		return companyStamp;
+	}
 
-public void setCompanyStamp(String companyStamp) {
-    this.companyStamp = companyStamp;
-}
+	public void setCompanyStamp(String companyStamp) {
+		this.companyStamp = companyStamp;
+	}
 
-public String getAuthorizedName() {
-    return authorizedName;
-}
+	public String getAuthorizedName() {
+		return authorizedName;
+	}
 
-public void setAuthorizedName(String authorizedName) {
-    this.authorizedName = authorizedName;
-}
+	public void setAuthorizedName(String authorizedName) {
+		this.authorizedName = authorizedName;
+	}
 
-public String getAuthorizedRole() {
-    return authorizedRole;
-}
+	public String getAuthorizedRole() {
+		return authorizedRole;
+	}
 
-public void setAuthorizedRole(String authorizedRole) {
-    this.authorizedRole = authorizedRole;
-}
+	public void setAuthorizedRole(String authorizedRole) {
+		this.authorizedRole = authorizedRole;
+	}
 
-public String getCompanyName() {
-    return companyName;
-}
+	public String getCompanyName() {
+		return companyName;
+	}
 
-public void setCompanyName(String companyName) {
-    this.companyName = companyName;
-}
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
 
-public String getContactNumber() {
-    return contactNumber;
-}
+	public String getContactNumber() {
+		return contactNumber;
+	}
 
-public void setContactNumber(String contactNumber) {
-    this.contactNumber = contactNumber;
-}
+	public void setContactNumber(String contactNumber) {
+		this.contactNumber = contactNumber;
+	}
 
-public String getContactEmail() {
-    return contactEmail;
-}
+	public String getContactEmail() {
+		return contactEmail;
+	}
 
-public void setContactEmail(String contactEmail) {
-    this.contactEmail = contactEmail;
-}
+	public void setContactEmail(String contactEmail) {
+		this.contactEmail = contactEmail;
+	}
 
-public String getLocation() {
-    return location;
-}
+	public String getLocation() {
+		return location;
+	}
 
-public void setLocation(String location) {
-    this.location = location;
-}
+	public void setLocation(String location) {
+		this.location = location;
+	}
 
-public String getSignatureNote() {
-    return signatureNote;
-}
+	public String getSignatureNote() {
+		return signatureNote;
+	}
 
-public void setSignatureNote(String signatureNote) {
-    this.signatureNote = signatureNote;
-}
+	public void setSignatureNote(String signatureNote) {
+		this.signatureNote = signatureNote;
+	}
 
-public String getSignatureUpload() {
-	return signatureUpload;
-}
+	public String getSignatureUpload() {
+		return signatureUpload;
+	}
 
-public void setSignatureUpload(String signatureUpload) {
-	this.signatureUpload = signatureUpload;
-}
-public Double getAdjustmentAmount() {
-	return adjustmentAmount != null ? adjustmentAmount : 0.0;
-}
+	public void setSignatureUpload(String signatureUpload) {
+		this.signatureUpload = signatureUpload;
+	}
+	public Double getAdjustmentAmount() {
+		return adjustmentAmount != null ? adjustmentAmount : 0.0;
+	}
 
-public void setAdjustmentAmount(Double adjustmentAmount) {
-	this.adjustmentAmount = adjustmentAmount != null ? adjustmentAmount : 0.0;
-}
+	public void setAdjustmentAmount(Double adjustmentAmount) {
+		this.adjustmentAmount = adjustmentAmount != null ? adjustmentAmount : 0.0;
+	}
 
+	public Map<String, List<String>> getAssumptions() {
+		return assumptions;
+	}
+
+	public void setAssumptions(Map<String, List<String>> assumptions) {
+		this.assumptions = assumptions;
+	}
+
+	public String getClientOrganization() {
+		return clientOrganization;
+	}
+
+	public void setClientOrganization(String clientOrganization) {
+		this.clientOrganization = clientOrganization;
+	}
     
 }
