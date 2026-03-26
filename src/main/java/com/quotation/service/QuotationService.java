@@ -204,102 +204,88 @@ public class QuotationService {
             }
 
             String emailBody =
-            "<div style='background:#f4f4f4;padding:30px;font-family:Arial,Helvetica,sans-serif;'>"
 
-            + "<div style='max-width:650px;margin:auto;background:white;border-radius:8px;"
-            + "box-shadow:0 4px 10px rgba(0,0,0,0.08);overflow:hidden;'>"
+            		"<div style='font-family:Arial,Helvetica,sans-serif;'>"
 
-            // Header Image
-            + "<div style='text-align:center;'>"
-            + "<img src='cid:headerImage' style='width:100%;display:block;' alt='SmartMatrix Header' />"
-            + "</div>"
+            		// ✅ Logo (simple, no background)
+            		+ "<div style='margin-bottom:15px;'>"
+            		+ " <img src='cid:mainLogo' \r\n"
+            		+ "       style='width:200px;height:auto;display:block;' \r\n"
+            		+ "       alt='Company Logo' />"
+            		+ "</div>"
 
-            // Content
-            + "<div style='padding:30px;'>"
+            		// Content
+            		+ "<p>Dear <b>" + quotation.getClient() + "</b>,</p>"
 
-            + "<h2 style='color:#333;margin-top:0;'>Quotation Approval Required</h2>"
+            		+ "<p>Please review the quotation and take action below:</p>"
 
-            + "<p style='font-size:15px;color:#555;'>Dear <b>" + quotation.getClient() + "</b>,</p>"
+            		// Simple details (no table)
+            		+ "<table style='margin-top:10px;font-size:14px;'>"
 
-            + "<p style='color:#555;'>Please review the quotation details below and approve or reject it.</p>"
+            		+ "<tr>"
+            		+ "<td style='width:140px;font-weight:bold;'>Quotation No:</td>"
+            		+ "<td>" + quotation.getQuotationNumber() + "</td>"
+            		+ "</tr>"
 
-            // Quotation Table
-            + "<table style='width:100%;border-collapse:collapse;margin-top:20px;'>"
+            		+ "<tr>"
+            		+ "<td style='font-weight:bold;'>Date:</td>"
+            		+ "<td>" + quotation.getDate() + "</td>"
+            		+ "</tr>"
 
-            + "<tr>"
-            + "<td style='padding:8px 0;color:#666;'><b>Quotation No</b></td>"
-            + "<td style='padding:8px 0;color:#333;'>" + quotation.getQuotationNumber() + "</td>"
-            + "</tr>"
+            		+ "<tr>"
+            		+ "<td style='font-weight:bold;'>Valid Until:</td>"
+            		+ "<td>" + quotation.getValidUntil() + "</td>"
+            		+ "</tr>"
 
-            + "<tr>"
-            + "<td style='padding:8px 0;color:#666;'><b>Date</b></td>"
-            + "<td style='padding:8px 0;color:#333;'>" + quotation.getDate() + "</td>"
-            + "</tr>"
+            		+ "<tr>"
+            		+ "<td style='font-weight:bold;'>Project:</td>"
+            		+ "<td>" + quotation.getProject() + "</td>"
+            		+ "</tr>"
 
-            + "<tr>"
-            + "<td style='padding:8px 0;color:#666;'><b>Valid Until</b></td>"
-            + "<td style='padding:8px 0;color:#333;'>" + quotation.getValidUntil() + "</td>"
-            + "</tr>"
+            		+ "<tr>"
+            		+ "<td style='font-weight:bold;'>Total Cost:</td>"
+            		+ "<td>₹ " + displayAmount + "</td>"
+            		+ "</tr>"
 
-            + "<tr>"
-            + "<td style='padding:8px 0;color:#666;'><b>Project</b></td>"
-            + "<td style='padding:8px 0;color:#333;'>" + quotation.getProject() + "</td>"
-            + "</tr>"
+            		+ "<tr>"
+            		+ "<td style='font-weight:bold;'>Timeline:</td>"
+            		+ "<td>" + quotation.getTotalTimeline() + "</td>"
+            		+ "</tr>"
 
-            + "<tr>"
-            + "<td style='padding:8px 0;color:#666;'><b>Total Cost</b></td>"
-            + "<td style='padding:8px 0;color:#333;font-weight:bold;'>₹ " + displayAmount + "</td>"
-            + "</tr>"
+            		+ "</table>"
 
-            + "<tr>"
-            + "<td style='padding:8px 0;color:#666;'><b>Total Timeline</b></td>"
-            + "<td style='padding:8px 0;color:#333;'>" + quotation.getTotalTimeline() + "</td>"
-            + "</tr>"
+            		// Buttons
+            		+ "<div style='margin-top:20px;'>"
 
-            + "</table>"
+            		+ "<a href='" + approveUrl + "' "
+            		+ "style='background:#22c55e;color:white;padding:10px 20px;"
+            		+ "text-decoration:none;border-radius:5px;margin-right:10px;'>Approve</a>"
 
-            // Buttons
-            + "<div style='margin-top:35px;text-align:center;'>"
+            		+ "<a href='" + rejectUrl + "' "
+            		+ "style='background:#ef4444;color:white;padding:10px 20px;"
+            		+ "text-decoration:none;border-radius:5px;'>Reject</a>"
 
-            + "<a href='" + approveUrl + "' "
-            + "style='background:#22c55e;color:white;padding:12px 28px;"
-            + "text-decoration:none;border-radius:6px;font-weight:bold;"
-            + "display:inline-block;margin-right:10px;'>Approve</a>"
+            		+ "</div>"
 
-            + "<a href='" + rejectUrl + "' "
-            + "style='background:#ef4444;color:white;padding:12px 28px;"
-            + "text-decoration:none;border-radius:6px;font-weight:bold;"
-            + "display:inline-block;'>Reject</a>"
 
-            + "</div>"
+            		// Footer text only
+            		+ "<p style='margin-top:30px;color:#555;font-size:14px;'>"
+            		+ "If you have any questions, feel free to contact us."
+            		+ "</p>"
 
-            // Closing
-            + "<p style='margin-top:30px;color:#555;font-size:14px;'>"
-            + "If you have any questions regarding this quotation, feel free to contact us."
-            + "</p>"
+            		+ "<p style='margin-top:20px;color:#555;'>"
+            		+ "Best Regards,<br>"
+            		+ "<b>SmartMatrix Digital Services</b>"
+            		+ "</p>"
 
-            + "<p style='margin-top:20px;color:#555;'>"
-            + "Best Regards,<br>"
-            + "<b>SmartMatrix Digital Services</b>"
-            + "</p>"
-
-            + "</div>"
-
-            // Footer Image
-            + "<div style='text-align:center;'>"
-            + "<img src='cid:footerImage' style='width:100%;display:block;' alt='SmartMatrix Footer' />"
-            + "</div>"
-
-            + "</div>"
-            + "</div>";
-
+            		+ "</div>"
+            		+ "</div>"
+            		+ "</div>";
             helper.setText(emailBody, true);
 
-            // Embed header and footer images inline
-            ClassPathResource headerRes = new ClassPathResource("images/header.jpg");
-            ClassPathResource footerRes = new ClassPathResource("images/footer.jpg");
-            helper.addInline("headerImage", headerRes, "image/jpeg");
-            helper.addInline("footerImage", footerRes, "image/jpeg");
+         // ✅ ADD LOGO HERE (AFTER setText)
+            ClassPathResource logo = new ClassPathResource("images/mainlogo.png");
+            helper.addInline("mainLogo", logo, "image/png");
 
             helper.addAttachment(file.getOriginalFilename(), file);
 
